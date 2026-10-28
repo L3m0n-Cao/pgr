@@ -1,0 +1,314 @@
+/* Pig Got Rhythm — UI built the way Clock Simulator builds its own:
+   no panels, no shadows. White Open Sans at partial alpha and teal numerals
+   sit straight on top of the 3-D scene, with the shader's icon sprites as the
+   buttons. Sizes and alphas come from WindowEnd/ReadyWindow in the scene. */
+
+@font-face {
+  font-family: "Open Sans";
+  src: url("assets/fonts/OpenSans-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Open Sans";
+  src: url("assets/fonts/OpenSans-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: block;
+}
+
+:root {
+  --w59: rgba(255, 255, 255, 0.59);
+  --navy: #1c1c53;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--navy);
+  color: #fff;
+  font-family: "Open Sans", "Segoe UI", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+#bg {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(to bottom, var(--navy) 0%, #1d7f9a 55%, #20b4c3 100%);
+}
+
+#view {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+  transition: opacity 0.3s ease;
+}
+
+/* GameManager.WaitAndClear unloads the scene the moment a run ends, so the end
+   window is the gradient alone -- no clock, no pig. */
+body.end #view { opacity: 0; }
+
+/* Points text: Clock4 anchors it top-right, offset (-50, -50) */
+#hud {
+  position: fixed;
+  top: max(18px, env(safe-area-inset-top));
+  right: max(24px, env(safe-area-inset-right));
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+#hud.on { opacity: 1; }
+
+#score {
+  font-weight: 700;
+  font-size: clamp(34px, 7.4vmin, 76px);
+  line-height: 1;
+  color: rgb(100, 255, 255);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------- screens */
+.screen {
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+
+.screen.show { opacity: 1; pointer-events: auto; }
+
+/* the ready window sits over the bright clock face, and the game's own chrome
+   is white at partial alpha — a soft veil keeps it readable without a card */
+#menu::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(72% 66% at 50% 64%, rgba(4, 20, 32, 0.42), rgba(4, 20, 32, 0.16) 58%, rgba(4, 20, 32, 0) 82%);
+}
+
+.screen > * { z-index: 1; }
+
+/* logo watermark: 250x131 at 15.7% alpha, bottom-left, 10px inset */
+.logo {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  width: min(250px, 34vw);
+  opacity: 0.157;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------- ready */
+.ready {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2vmin;
+  text-align: center;
+  /* sits under the pig rather than across it */
+  padding: 44vh 24px 0;
+}
+
+.ready h1 {
+  margin: 0;
+  font-weight: 700;
+  font-size: clamp(28px, 6.4vmin, 66px);
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+
+/* ReadyWindow text: 36pt, white 59% */
+.tapLine {
+  margin: 0;
+  font-size: clamp(16px, 3.4vmin, 36px);
+  color: var(--w59);
+}
+
+.bestLine {
+  margin: 1.4vmin 0 0;
+  font-size: clamp(13px, 2.4vmin, 25px);
+  color: var(--w59);
+  font-variant-numeric: tabular-nums;
+}
+
+.bestLine b { font-weight: 700; color: #fff; }
+
+/* ----------------------------------------------------------- end window */
+/* WindowEnd: "Best" / value / "Your score" / value / replay, centred on the
+   gradient. Sizes and colours measured off the app's own end window. */
+.endStack {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 12.4vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* only while the window is up: an unconditioned `pointer-events: auto` here
+   out-specified .screen's `none` and left the replay button hittable during
+   play, so a tap on the (invisible) button restarted the run */
+.screen.show .endStack > * { pointer-events: auto; }
+
+.endLabel {
+  margin: 0;
+  font-size: min(5.8vh, 9vw);
+  line-height: 1;
+  color: #a9c6f2;
+}
+
+.endLabel.you {
+  margin-top: 1vh;
+  font-size: min(6.1vh, 9.4vw);
+  color: #bce3fa;
+}
+
+.endValue {
+  margin: 1.8vh 0 0;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.34em;
+}
+
+.endValue b { font-weight: 400; }
+
+.endValue.best {
+  font-size: min(10.5vh, 16vw);
+  color: #4eaaf2;
+}
+
+.endValue.score {
+  position: relative;
+  margin-top: 2.8vh;
+  font-size: min(15.2vh, 24vw);
+  color: #3fc9fa;
+}
+
+/* NewHighScore trophy: white sprite, tinted with the scene's 1, .835, .478.
+   Hung off the number so the score itself stays centred on the labels. */
+.trophy {
+  position: absolute;
+  right: calc(100% + 0.26em);
+  top: 50%;
+  width: 0.46em;
+  transform: translateY(-46%);
+  opacity: 0;
+  transition: opacity 0.2s ease 0.15s;
+  filter: sepia(1) saturate(2.6) hue-rotate(-14deg) brightness(1.08);
+}
+
+.trophy.show { opacity: 1; }
+
+/* Restart: replay icon, centred under the score */
+.replay {
+  width: min(19.4vh, 42vw);
+  margin-top: 7.2vh;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 0.15s ease;
+}
+
+.replay img { width: 100%; display: block; }
+
+.replay:hover { opacity: 0.75; }
+
+/* Post-death cooldown: the restart waits a moment before it will take input */
+body.cooling .replay {
+  pointer-events: none;
+  opacity: 0.35;
+  transition: opacity 0.35s ease;
+}
+
+#over .logo {
+  width: min(34vw, 230px);
+  opacity: 0.35;
+}
+
+.icon {
+  width: clamp(46px, 9.9vmin, 104px);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  opacity: 0.31;
+  transition: opacity 0.15s ease;
+}
+
+.icon img { width: 100%; display: block; }
+
+.icon:hover { opacity: 1; }
+
+/* Exit: top-left, 19.6% */
+.exit {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  width: clamp(44px, 9.5vmin, 98px);
+  opacity: 0.196;
+}
+
+.exit:hover { opacity: 1; }
+
+/* ---------------------------------------------------------------- hint */
+#tapHint {
+  position: fixed;
+  left: 50%;
+  bottom: 20vh;
+  transform: translateX(-50%);
+  font-size: clamp(16px, 3.4vmin, 36px);
+  color: var(--w59);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+#tapHint.on { opacity: 1; }
+
+/* ---------------------------------------------------------------- sound */
+#mute {
+  position: fixed;
+  right: max(18px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+#mute:hover { color: #fff; }
+#mute.off { color: rgba(255, 255, 255, 0.22); }
+#mute.off #wavePath { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; }
+}

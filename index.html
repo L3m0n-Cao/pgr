@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Pig Got Rhythm</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23ff8fb0'/><circle cx='11' cy='14' r='2.6' fill='%23221'/><circle cx='21' cy='14' r='2.6' fill='%23221'/><ellipse cx='16' cy='21' rx='5' ry='4' fill='%23e0728f'/></svg>" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="bg"></div>
+  <canvas id="view"></canvas>
+
+  <div id="hud"><span id="score">0</span></div>
+
+  <div id="tapHint">Tap</div>
+
+  <!-- ready window: tap anywhere -->
+  <div class="screen" id="menu">
+    <div class="ready">
+      <h1>Pig Got Rhythm</h1>
+      <p class="tapLine">Tap to start</p>
+      <p class="bestLine">Best <b id="menuBest">00:00</b></p>
+    </div>
+    <img class="logo" src="assets/ui/logo.png" alt="" draggable="false" />
+  </div>
+
+  <!-- end window, laid out like WindowEnd in the scene -->
+  <div class="screen" id="over">
+    <button class="icon exit" id="homeBtn" aria-label="Back to menu">
+      <img src="assets/ui/exit.png" alt="" draggable="false" />
+    </button>
+    <img class="logo" src="assets/ui/logo.png" alt="" draggable="false" />
+
+    <div class="endStack">
+      <p class="endLabel">Best</p>
+      <p class="endValue best"><b id="overBest">00:00</b></p>
+      <p class="endLabel you">Your score</p>
+      <p class="endValue score">
+        <img class="trophy" id="trophy" src="assets/ui/puchar.png" alt="" draggable="false" />
+        <span id="finalScore">00:00</span>
+      </p>
+      <button class="replay" id="againBtn" aria-label="Play again">
+        <img src="assets/ui/replay1.png" alt="" draggable="false" />
+      </button>
+    </div>
+  </div>
+
+  <button id="mute" aria-label="Toggle sound">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+      <path fill="currentColor" d="M4 9h3l5-4v14l-5-4H4z"/>
+      <path id="wavePath" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 8.6a5 5 0 0 1 0 6.8M18.8 5.8a8.6 8.6 0 0 1 0 12.4"/>
+    </svg>
+  </button>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
